@@ -24,12 +24,11 @@ phases:
       - echo Pushing the Docker images...
       - docker push $REPOSITORY_URI:latest
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - printf'[{"name":"cicd-container","imageUri":"%s"}]'"$IMAGE_TAG"> image.json
 
 artifacts:
   files:
     - '**/*'
-    - image.json
+    - target/messageUtil-1.0.jar
   base-directory: './build/libs'
 reports:
       test-report-group: #Junit reports
