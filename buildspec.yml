@@ -17,13 +17,14 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - docker build --tag "$IMAGE_TAG"
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
       - docker push "$IMAGE_TAG"
-      - printf '[{"name":"cicd-container","imageUri":"%s"}]' "$IMAGE_TAG" > image.json
+      - printf'[{"name":"cicd-container","imageUri":"%s"}]'"$IMAGE_TAG"> image.json
 
 
 artifacts:
