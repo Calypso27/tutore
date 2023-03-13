@@ -7,7 +7,7 @@ phases:
       - aws --version
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
       - REPOSITORY_URI=829338826705.dkr.ecr.eu-north-1.amazonaws.com/webservice
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)
+      - COMMIT_HASH="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
       - IMAGE_TAG="${REPOSITORY_URI}:${TAG}"
 
   install:
@@ -17,7 +17,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - docker build --tag "$IMAGE_TAG"
+      - docker build --tag "$IMAGE_TAG".
 
   post_build:
     commands:
