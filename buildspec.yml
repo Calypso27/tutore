@@ -24,7 +24,7 @@ phases:
       - echo Pushing the Docker images...
       - docker push "$IMAGE_TAG"
       - echo Writing image definitions file...
-      - printf '[{"name":"cicd-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > image.json
+      - printf '[{"name":"cicd-container","imageUri":"%s"}]' "$IMAGE_TAG" > image.json
 
 
 artifacts:
