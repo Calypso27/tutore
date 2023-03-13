@@ -1,5 +1,5 @@
-FROM amazoncorretto:11
+FROM amazonlinux:2017.03
 
-ARG JAR_FILE=build/libs/*SNAPSHOT.jar
-COPY ${JAR_FILE} /app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+RUN yum install -y nginx
+COPY ./app /bin/app
+CMD ["/bin/app"]
