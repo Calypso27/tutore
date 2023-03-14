@@ -6,9 +6,9 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      - REPOSITORY_URI=829338826705.dkr.ecr.eu-north-1.amazonaws.com/webservice
-      - COMMIT_HASH="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
-      - IMAGE_TAG="${REPOSITORY_URI}:${TAG}"
+      - REPOSITORY_URI=220567463676.dkr.ecr.us-east-1.amazonaws.com/serviceweb
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
 
   install:
     runtime-versions:
@@ -17,14 +17,31 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - ./gradlew clean build 
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"cicd-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json
+
 
 artifacts:
   files:
     - '**/*'
-    - target/messageUtil-1.0.jar
+    - imagedefinitions.json
   base-directory: './build/libs'
+reports:
+      test-report-group: #Junit reports
+        files:
+          - 'TEST-boris.maths.MathsApplicationTests.xml'
+        #discard-paths: false #do not remove file paths from test result files
+        base-directory: './build/test-results/test'
+
